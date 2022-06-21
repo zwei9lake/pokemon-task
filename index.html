@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokemon</title>
+  </head>
+
+  <style>
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .pokemon {
+      background-color: #eee;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .pokemon .img-container {
+      background-color: rgba(255, 255, 255, 0.6);
+      border-radius: 10%;
+    }
+
+    .pokemon .img-container .img {
+      margin-top: 20px;
+      max-width: 90%;
+    }
+
+    .pokemon .info {
+      margin-top: 20px;
+    }
+    .pokemon .number {
+      background-color: #fff;
+    }
+  </style>
+  <body>
+    <h1>Catch the Pokemon!</h1>
+    <button id="getBtn">Get Pokemon</button>
+    <div id="container" class="container"></div>
+
+    <script>
+      const btn = document.getElementById("getBtn");
+
+      btn.addEventListener("click", function () {
+        fetchPokemons();
+      });
+
+      const container = document.getElementById("container");
+      const poke_number = 30;
+      const colors = {
+        fire: "#FDDFDF",
+        grass: "#DEFDE0",
+        water: "#DEF3FD",
+        ground: "#F4E7DA",
+        rock: "#D5D5D4",
+        poison: "#98d7a5",
+        bug: "#f8d5a3",
+        flying: "#f5f5f5",
+        normal: "#F5F5F5",
+      };
+
+      const main_types = Object.keys(colors);
+      console.log(main_types);
+
+      const fetchPokemons = async () => {
+        for (let i = 1; i <= poke_number; i++) {
+          await getPokemon(i);
+        }
+      };
+      const getPokemon = async (id) => {
+        const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
+        const results = await fetch(url, {
+          method: "GET",
+        });
+        const pokemon = await results.json();
+        createPokemonCard(pokemon);
+      };
+
+      function createPokemonCard(pokemon) {
+        const pokemonEl = document.createElement("div");
+        pokemonEl.classList.add("pokemon");
+
+        const poke_types = pokemon.types.map((element) => element.type.name);
+        const type = main_types.find((type) => poke_types.indexOf(type) > -1);
+        const color = colors[type];
+        pokemonEl.style.backgroundColor = color;
+        const pokeInnerHTML = `
+        <div class = "img-container">
+          <img src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png"
+          </div>
+          <div class = "info">
+            <span class = "number">${pokemon.id}</span>
+            <h3 class = "name">${pokemon.name}</h3>
+            <small class = "type">Type: <span>${type}</span></small>
+            </div>
+          
+        `;
+
+        pokemonEl.innerHTML = pokeInnerHTML;
+        container.appendChild(pokemonEl);
+      }
+    </script>
+  </body>
+</html>
